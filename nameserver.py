@@ -75,6 +75,45 @@ def _update(dirpath, add=True):
        like we've done that. """
        
     return 'OK'
+
+""" updating the name dictionary"""
+
+def _update_names(dirpath, srv, add=True):
+    """dirpath: To update the directory path.
+       srv: To associate the dirpath to the server in case of add is false.
+       add: if True then it add the couple (dirpath, srv) otherwise delete the 
+       dirpath from the dictionnary."""
+       
+       
+    if dirpath[-1] == '/':
+        dirpath = os.path.dirname(dirpath)
+        
+        if dirpath[-1] == '/':
+        dirpath = os.path.dirname(dirpath)
+
+    if add:
+        logging.info('Update directory %s on %s.', dirpath, srv)
+        _names[dirpath] = srv
+
+    elif dirpath in _names:
+        logging.info('Remove directory %s on %s.', dirpath, srv)
+        del _names[dirpath]
+        
+    
+    else:
+        raise ValueError('%s not deleted, because it was not'
+                         ' in the dictionnary/.' % dirpath)
+        
+ 
+_config = {
+            'dbfile': 'names.db',
+         }
+
+logging.info('Loading config file nameserver.json.')
+utils.load_config(_config, 'nameserver.json')
+_names = shelve.open(_config['dbfile'])
+
+atexit.register(lambda: _names.close())
             
             
             
