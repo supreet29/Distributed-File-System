@@ -38,3 +38,43 @@ def DELETE(self, dirpath):
         """See _update (with add=False)"""
 
         return _update(str(dirpath), False)
+    
+    
+def _update(dirpath, add=True):
+    """Adding directories to the name server"""
+    
+    """ If directory path is root then it will create list of directories 
+    in dirs, associate the query to name server and store in the srv
+    
+    other wise it will remove the directory name in the same way instead of 
+    adding them"""
+    
+    web.header('Content-Type', 'text/plain; charset=UTF-8')
+    i = web.input()
+    
+    if 'srv' not in i:
+        raise web.badrequest()
+
+    srv = i['srv']
+
+    if dirpath == '/':
+        if 'dirs' not in i:
+            raise web.badrequest()
+
+        for dirpath in i['dirs'].split('\n'):
+            if not dirpath:
+                continue
+            
+            _update_names(dirpath, srv, add)
+        
+        else:
+            _update_names(dirpath, srv, add)
+            
+       """ Return OK in case of valueError because we have to delete the 
+       directory from the name server list and in case of null value it seems 
+       like we've done that. """
+       
+    return 'OK'
+            
+            
+            
