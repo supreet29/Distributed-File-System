@@ -65,10 +65,17 @@ def _update(dirpath, add=True):
             if not dirpath:
                 continue
             
+       try:
+                _update_names(dirpath, srv, add)
+            except ValueError as e:
+                logging.exception(e)
+
+    else:
+        try:
             _update_names(dirpath, srv, add)
-        
-        else:
-            _update_names(dirpath, srv, add)
+        except ValueError as e:
+            logging.exception(e)
+            
             
        """ Return OK in case of valueError because we have to delete the 
        directory from the name server list and in case of null value it seems 
