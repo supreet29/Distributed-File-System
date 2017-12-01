@@ -14,7 +14,7 @@ def GET(self, filepath):
     """Returs the directory in which file path is mentioned if filepath is "/" then it returns
     a whole directory"""
 
-    web.header('Content-Type', 'text/plain; charset=UTF-8')
+    """web.header()"""
         filepath = str(filepath)
         
         if filepath == '/':
@@ -49,7 +49,7 @@ def _update(dirpath, add=True):
     other wise it will remove the directory name in the same way instead of 
     adding them"""
     
-    web.header('Content-Type', 'text/plain; charset=UTF-8')
+   """ web.header()"""
     i = web.input()
     
     if 'srv' not in i:
