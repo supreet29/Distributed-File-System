@@ -1,55 +1,67 @@
-import atexit
-import logging
 import os
-import shelve
-
 import web
+import shelve
+import logging
 
-import utils
+urls = (
+        '/filepath/(.*)', 'NameServer'
+        )
 
 class NameServer:
     """Nameserver is used for the mapping between the directories and file server."""
+    
+_names = shelve.open('dbfile')
 
 def GET(self, filepath):
-    """Returs the directory in which file path is mentioned if filepath is "/" then it returns
-    a whole directory"""
-
-    """web.header()"""
-        filepath = str(filepath)
+    
+    filepath = str(filepath)
+    dirpath = str(os.path.dirname(filepath))
+    if filepath == '/':
+        return '\n'.join('%s=%s' % (dirpath, _names[dirpath])
+                for dirpath in sorted(_names))
+    
         
-        if filepath == '/':
-            return '\n'.join('%s=%s' % (dirpath, _names[dirpath])
-                    for dirpath in sorted(_names))
+    if dirpath in _names:
+        return _names[dirpath]
 
-        dirpath = str(os.path.dirname(filepath))
-
-        if dirpath in _names:
-            return _names[dirpath]
-
-        raise web.notfound('No file found in the server')
+    raise web.notfound('No file server serve this file.')
 
 
-def POST(self, dirpath):
-        """See _update (with add=True)"""
+_names = shelve.open('dbfile')
+_names.close()
 
-        return _update(str(dirpath))
+"""
+    filename = ""
+    if '*' in filepath:
+        dirname = open.shelve("NameServer")
+        print(dirname)
+        dirname.close()
+           
+        if not filepath:
+            return "No such file or directory"
     
-def DELETE(self, dirpath):
-        """See _update (with add=False)"""
+    dirname=open.shelve("NameServer")
 
-        return _update(str(dirpath), False)
-    
+    try:
+        filename = dirname[filepath]
+    finally:
+        dirname.close()
+    return filename
+"""
+
+def POST(self, filepath):
+    filepath = str(filepath)
+    dirpath = str(os.path.dirname(filepath))
+    return _update(str(dirpath))
+
+def DELETE(self, filepath):
+    filepath = str(filepath)
+    dirpath = str(os.path.dirname(filepath))
+    return _update(str(dirpath), False)
+        
     
 def _update(dirpath, add=True):
-    """Adding directories to the name server"""
-    
-    """ If directory path is root then it will create list of directories 
-    in dirs, associate the query to name server and store in the srv
-    
-    other wise it will remove the directory name in the same way instead of 
-    adding them"""
-    
-   """ web.header()"""
+    web.header('Content-Type', 'text/plain; charset=UTF-8')
     i = web.input()
     
     if 'srv' not in i:
@@ -64,8 +76,8 @@ def _update(dirpath, add=True):
         for dirpath in i['dirs'].split('\n'):
             if not dirpath:
                 continue
-            
-       try:
+
+            try:
                 _update_names(dirpath, srv, add)
             except ValueError as e:
                 logging.exception(e)
@@ -76,22 +88,24 @@ def _update(dirpath, add=True):
         except ValueError as e:
             logging.exception(e)
             
-            
-       """ Return OK in case of valueError because we have to delete the 
-       directory from the name server list and in case of null value it seems 
-       like we've done that. """
-       
-    return 'OK'
- 
-_config = {
-            'dbfile': 'names.db',
-         }
+    return 'OK'        
+        
+def _update_names(dirpath, srv, add=True):
+        if dirpath[-1] == '/':
+            dirpath = os.path.dirname(dirpath)
 
-logging.info('Loading config file nameserver.json.')
-utils.load_config(_config, 'nameserver.json')
-_names = shelve.open(_config['dbfile'])
+        if add:
+            logging.info('Update directory %s on %s.', dirpath, srv)
+            _names[dirpath] = srv
 
-atexit.register(lambda: _names.close())
+        elif dirpath in _names:
+            logging.info('Remove directory %s on %s.', dirpath, srv)
+            del _names[dirpath]
+
+        else:
+            raise ValueError('%s wasn\'t not deleted, because it wasn\'t'
+                         ' in the dictionnary/database.' % dirpath)
             
-            
-            
+if __name__=="__main__":
+    app = web.application(urls,globals())
+    app.run()
