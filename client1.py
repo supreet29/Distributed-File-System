@@ -21,8 +21,9 @@ if options=='1':
 if options=='2':
     filepath = input("Enter the file name:")
     url = url+filepath
-    content = "hello"
-    response= req.post(url, content)
+    data = {'Responcse': 'Hello world'}
+    request = req.post(url, data = data)
+    req.raise_for_status()
     print("Response: ",response.text)
 if options=='3':
     filepath = input("Enter the file name:")
