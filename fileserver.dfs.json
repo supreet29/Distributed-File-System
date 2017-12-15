@@ -2,6 +2,6 @@
     "nameserver": "localhost:8000",
     "lockserver": "localhost:8001",
     "srv": "localhost:8002",
-    "directories": ["/data", "/src/linux", "/src/vim"],
-    "fsroot": "fs1/"
+    "directories": ["/DFS_Test"],
+    "fsroot": "/"
 }
