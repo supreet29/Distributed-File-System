@@ -1,14 +1,12 @@
 import web
 import os
 import logging
-import utils
 from contextlib import closing
-import http.client
-import time
+import http.client 
 
 urls = (
-        '/filepath/(.*)', 'Fileserver'
-        )
+    '/filepath/(.*)', 'Fileserver'
+)
 
 class Fileserver:
     def GET(self,filepath):
@@ -16,14 +14,17 @@ class Fileserver:
         
         #p = os.path.isfile(filepath)
         print("inside get")
-        if os.path.isfile(filepath):
-            with open(filepath) as f:
-                return f.read()
+        if not filepath:
+            return "File path not given"
         else:
-            return "wrong path"
-
-def PUT(self, filepath):
-    """Replace the file by the data in the request."""
+            if os.path.isfile(filepath):
+                with open(filepath) as f:
+                    return f.read()
+            else:
+                return "Not found"
+     
+    def PUT(self, filepath):
+        """Replace the file by the data in the request."""
         
         p = os.path.isfile(filepath)
         
@@ -31,18 +32,13 @@ def PUT(self, filepath):
             print(web.data())
             f.write(web.data().decode())
 
-    return ''
-
-def DELETE(self, filepath):
-    os.unlink(_get_local_path(filepath))
-    return 'OK'
-
-def HEAD(self, filepath):
-    p = _get_local_path(filepath)
-        web.header('Last-Modified', time.ctime(os.path.getmtime(p)))
         return ''
+
+    def DELETE(self, filepath):
+        os.unlink(filepath)
+        return 'OK'
+
 
 if __name__ == "__main__":
     app = web.application(urls, globals())
     app.run()
-
