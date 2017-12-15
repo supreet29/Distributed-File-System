@@ -6,8 +6,11 @@ from contextlib import closing
 import http.client
 
 class memoize:
+    """Decorator, equivalent of the Python 3 functools.lru_cache(None)."""
 
     def __init__(self, fn):
+        """fn: the function to decorate."""
+
         self.fn = fn
         self.cache = {}
 
@@ -25,6 +28,7 @@ class memoize:
 
     def renew(self, *args, **kwds):
         """Delete the previous return value of the function for arguments
+           *args & **kwds and recompute the result.
         """
 
         key = tuple(args) + tuple(kwds)
@@ -75,6 +79,7 @@ def is_locked(filepath, host, port, lock_id=None):
 @memoize
 def get_server(filepath, host, port):
     """Return a server owning filepath.
+
        host & port: the address & port of a name server.
     """
 
@@ -92,6 +97,7 @@ def get_server(filepath, host, port):
 def get_lock(filepath, host, port):
     """Try to get a lock from the lockserver (host, port), if not able
        to get it, raise an Exception.
+
        filepath: the file on which we want the lock
        host & port: the address & port of a lock server.
     """
@@ -112,6 +118,7 @@ def get_lock(filepath, host, port):
 def revoke_lock(filepath, host, port, lock_id):
     """Revoke the lock on filepath, if it fails to revoke the lock,
        raise an Exception.
+
        host & port: the address & port of a lock server
        lock_id: the id of the current lock."""
 

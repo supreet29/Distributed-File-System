@@ -100,9 +100,6 @@ class LockServer:
                         del lock[filepath]
 
             # return OK even if some lock_ids were wrong
-            # because they wanted to revoke them, so we don't need
-            # to bother them with some lock_ids they want to revoke
-            # are no longer valid
             return 'OK'
 
         elif filepath in lock:

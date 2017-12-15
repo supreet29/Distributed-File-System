@@ -20,7 +20,7 @@ class File(SpooledTemporaryFile):
         """
         self.mode = mode
         self.filepath = filepath
-        host, port = utils.get_host_port(_config['nameserver'])
+        host, port = utils.get_host_port(config['nameserver'])
         self.srv = utils.get_server(filepath, host, port)
 
         if self.srv is None:
@@ -28,9 +28,9 @@ class File(SpooledTemporaryFile):
                     % filepath)
 
         self.last_modified = None
-        SpooledTemporaryFile.__init__(self, _config['max_size'], mode.replace('c', ''))
+        SpooledTemporaryFile.__init__(self, config['max_size'], mode.replace('c', ''))
 
-        host, port = utils.get_host_port(_config['lockserver'])
+        host, port = utils.get_host_port(config['lockserver'])
         if utils.is_locked(filepath, host, port):
             raise DFSError('The file %s is locked.' % filepath)
 
@@ -55,7 +55,7 @@ class File(SpooledTemporaryFile):
 
         if 'a' in mode or 'w' in mode:
             # automatically gets a lock if we're in write/append mode
-            host, port = utils.get_host_port(_config['lockserver'])
+            host, port = utils.get_host_port(config['lockserver'])
             self.lock_id = int(utils.get_lock(filepath, host, port))
 
         if 'c' in mode:
@@ -105,7 +105,7 @@ class File(SpooledTemporaryFile):
                                      ' the file.' % status)
 
         if self.lock_id is not None:
-            host, port = utils.get_host_port(_config['lockserver'])
+            host, port = utils.get_host_port(config['lockserver'])
             utils.revoke_lock(self.filepath, host, port, self.lock_id)
 
     @staticmethod
@@ -114,7 +114,7 @@ class File(SpooledTemporaryFile):
         if filepath in File._cache:
             f = File._cache[filepath]
 
-            host, port = utils.get_host_port(_config['nameserver'])
+            host, port = utils.get_host_port(config['nameserver'])
             fs = utils.get_server(filepath, host, port)
             host, port = utils.get_host_port(fs)
 
@@ -135,7 +135,7 @@ def unlink(filepath, lock_id=None):
     """Delete the file from the filesystem.
        If lock_id is provided, it's used to delete the file."""
     
-    host, port = utils.get_host_port(_config['nameserver'])
+    host, port = utils.get_host_port(config['nameserver'])
     fs = utils.get_server(filepath, host, port)
     host, port = utils.get_host_port(fs)
 
@@ -161,13 +161,13 @@ def rename(filepath, newfilepath):
 
 open = File
 
-_config = {
+config = {
         'nameserver': None,
         'lockserver': None,
         'max_size': 1024 ** 2,
          } # default
 File._cache = {}
-utils.load_config(_config, 'client.dfs.json')
+utils.load_config(config, 'client.dfs.json')
 
 
 

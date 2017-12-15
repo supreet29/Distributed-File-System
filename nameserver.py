@@ -11,6 +11,11 @@ class NameServer:
     """Nameserver is used for the mapping between the directories and file server."""
     
 _names = shelve.open('dbfile')
+config = {
+    'dbfile': 'names.db',
+    }
+logging.info('Loading config file nameserver.dfs.json.')
+utils.load_config(config, 'nameserver.dfs.json')
 
 def GET(self, filepath):
     
@@ -103,7 +108,7 @@ def update_names(dirpath, srv, add=True):
             del _names[dirpath]
 
         else:
-            raise ValueError('%s wasn\'t not deleted, because it wasn\'t'
+            raise ValueError('%s wasn\'t not deleted, because it was not'
                          ' in the dictionnary/database.' % dirpath)
             
 if __name__=="__main__":
