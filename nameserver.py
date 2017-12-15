@@ -52,15 +52,15 @@ _names.close()
 def POST(self, filepath):
     filepath = str(filepath)
     dirpath = str(os.path.dirname(filepath))
-    return _update(str(dirpath))
+    return update(str(dirpath))
 
 def DELETE(self, filepath):
     filepath = str(filepath)
     dirpath = str(os.path.dirname(filepath))
-    return _update(str(dirpath), False)
+    return update(str(dirpath), False)
         
     
-def _update(dirpath, add=True):
+def update(dirpath, add=True):
     web.header('Content-Type', 'text/plain; charset=UTF-8')
     i = web.input()
     
@@ -78,19 +78,19 @@ def _update(dirpath, add=True):
                 continue
 
             try:
-                _update_names(dirpath, srv, add)
+                update_names(dirpath, srv, add)
             except ValueError as e:
                 logging.exception(e)
 
     else:
         try:
-            _update_names(dirpath, srv, add)
+            update_names(dirpath, srv, add)
         except ValueError as e:
             logging.exception(e)
             
     return 'OK'        
         
-def _update_names(dirpath, srv, add=True):
+def update_names(dirpath, srv, add=True):
         if dirpath[-1] == '/':
             dirpath = os.path.dirname(dirpath)
 
