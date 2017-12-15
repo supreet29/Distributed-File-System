@@ -1,8 +1,8 @@
 import web
 import os
 import logging
-from contextlib import closing
-import http.client 
+import utils
+
 
 urls = (
     '/filepath/(.*)', 'Fileserver'
@@ -26,7 +26,7 @@ class Fileserver:
     def PUT(self, filepath):
         """Replace the file by the data in the request."""
         
-        p = os.path.isfile(filepath)
+        #p = os.path.isfile(filepath)
         
         with open(filepath, 'w') as f:
             print(web.data())
@@ -37,6 +37,17 @@ class Fileserver:
     def DELETE(self, filepath):
         os.unlink(filepath)
         return 'OK'
+
+config = {
+        'lockserver': None,
+        'nameserver': None,
+        'directories': [],
+        }
+
+logging.info('Loading config file fileserver.dfs.json.')
+utils.load_config(config, 'fileserver.dfs.json')
+
+config['directories'] = set(config['directories'])
 
 
 if __name__ == "__main__":
