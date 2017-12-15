@@ -10,7 +10,7 @@ urls = (
 class NameServer:
     """Nameserver is used for the mapping between the directories and file server."""
     
-_names = shelve.open('dbfile')
+names = shelve.open('dbfile')
 config = {
     'dbfile': 'names.db',
     }
@@ -22,18 +22,18 @@ def GET(self, filepath):
     filepath = str(filepath)
     dirpath = str(os.path.dirname(filepath))
     if filepath == '/':
-        return '\n'.join('%s=%s' % (dirpath, _names[dirpath])
-                for dirpath in sorted(_names))
+        return '\n'.join('%s=%s' % (dirpath, names[dirpath])
+                for dirpath in sorted(names))
     
         
-    if dirpath in _names:
-        return _names[dirpath]
+    if dirpath in names:
+        return names[dirpath]
 
     raise web.notfound('No file server serve this file.')
 
 
-_names = shelve.open('dbfile')
-_names.close()
+names = shelve.open('dbfile')
+names.close()
 
 """
     filename = ""
@@ -101,11 +101,11 @@ def update_names(dirpath, srv, add=True):
 
         if add:
             logging.info('Update directory %s on %s.', dirpath, srv)
-            _names[dirpath] = srv
+            names[dirpath] = srv
 
-        elif dirpath in _names:
+        elif dirpath in names:
             logging.info('Remove directory %s on %s.', dirpath, srv)
-            del _names[dirpath]
+            del names[dirpath]
 
         else:
             raise ValueError('%s wasn\'t not deleted, because it was not'
