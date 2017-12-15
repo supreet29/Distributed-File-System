@@ -149,15 +149,6 @@ def unlink(filepath, lock_id=None):
                              (status, filepath))
 
 
-def rename(filepath, newfilepath):
-    """Rename filepath to newfilepath."""
-
-    with open(filepath) as f:
-        with open(newfilepath, 'w') as nf:
-            nf.write(f.read())
-
-        unlink(filepath, f.lock_id)
-
 
 open = File
 
